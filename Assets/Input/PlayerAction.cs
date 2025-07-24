@@ -53,6 +53,33 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Scroll Weapon"",
+                    ""type"": ""Value"",
+                    ""id"": ""782d0a4b-e5c9-49a0-8054-9786281be572"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""d85a14d5-5817-4b21-b943-a0e053510db9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""b2543798-eb0a-4347-8289-c3f2b52f6aac"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +159,50 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
                     ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9295b64c-eb5a-4af5-9b10-5683330c2f5f"",
+                    ""path"": ""<Mouse>/scroll/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b129fe90-da12-4e7e-9993-3a9e39f16f57"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll Weapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""df482735-82e0-48a2-8fa2-80cb06850615"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6f1f6cd0-ec6f-42db-8849-d338d836b214"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -171,6 +242,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         m_CharacterBehaviour_Move = m_CharacterBehaviour.FindAction("Move", throwIfNotFound: true);
         m_CharacterBehaviour_Sprint = m_CharacterBehaviour.FindAction("Sprint", throwIfNotFound: true);
         m_CharacterBehaviour_Aim = m_CharacterBehaviour.FindAction("Aim", throwIfNotFound: true);
+        m_CharacterBehaviour_ScrollWeapon = m_CharacterBehaviour.FindAction("Scroll Weapon", throwIfNotFound: true);
+        m_CharacterBehaviour_Attack = m_CharacterBehaviour.FindAction("Attack", throwIfNotFound: true);
+        m_CharacterBehaviour_Reload = m_CharacterBehaviour.FindAction("Reload", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_MouseMove = m_Camera.FindAction("Mouse Move", throwIfNotFound: true);
@@ -244,6 +318,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterBehaviour_Move;
     private readonly InputAction m_CharacterBehaviour_Sprint;
     private readonly InputAction m_CharacterBehaviour_Aim;
+    private readonly InputAction m_CharacterBehaviour_ScrollWeapon;
+    private readonly InputAction m_CharacterBehaviour_Attack;
+    private readonly InputAction m_CharacterBehaviour_Reload;
     public struct CharacterBehaviourActions
     {
         private @PlayerAction m_Wrapper;
@@ -251,6 +328,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_CharacterBehaviour_Move;
         public InputAction @Sprint => m_Wrapper.m_CharacterBehaviour_Sprint;
         public InputAction @Aim => m_Wrapper.m_CharacterBehaviour_Aim;
+        public InputAction @ScrollWeapon => m_Wrapper.m_CharacterBehaviour_ScrollWeapon;
+        public InputAction @Attack => m_Wrapper.m_CharacterBehaviour_Attack;
+        public InputAction @Reload => m_Wrapper.m_CharacterBehaviour_Reload;
         public InputActionMap Get() { return m_Wrapper.m_CharacterBehaviour; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -269,6 +349,15 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
+            @ScrollWeapon.started += instance.OnScrollWeapon;
+            @ScrollWeapon.performed += instance.OnScrollWeapon;
+            @ScrollWeapon.canceled += instance.OnScrollWeapon;
+            @Attack.started += instance.OnAttack;
+            @Attack.performed += instance.OnAttack;
+            @Attack.canceled += instance.OnAttack;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
         }
 
         private void UnregisterCallbacks(ICharacterBehaviourActions instance)
@@ -282,6 +371,15 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
+            @ScrollWeapon.started -= instance.OnScrollWeapon;
+            @ScrollWeapon.performed -= instance.OnScrollWeapon;
+            @ScrollWeapon.canceled -= instance.OnScrollWeapon;
+            @Attack.started -= instance.OnAttack;
+            @Attack.performed -= instance.OnAttack;
+            @Attack.canceled -= instance.OnAttack;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
         }
 
         public void RemoveCallbacks(ICharacterBehaviourActions instance)
@@ -350,6 +448,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+        void OnScrollWeapon(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
     }
     public interface ICameraActions
     {

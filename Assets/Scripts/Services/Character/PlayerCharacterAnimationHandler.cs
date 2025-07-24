@@ -5,6 +5,14 @@ namespace SDFPS.Services.Character
 
 	public class PlayerCharacterAnimationHandler : MonoBehaviour
 	{
+		private const int BASE_LAYER = 0;
+		private const int AIM_TRANSITION_LAYER = 1;
+		private const int WEAPON_CHANGE_LAYER = 2;
+		private const int ATTACK_LAYER = 3;
+		private const int RELOAD_LAYER = 4;
+
+		
+		
 		[SerializeField] private Animator m_animator;
 
 		[Header("Transition Speed")]
@@ -38,6 +46,31 @@ namespace SDFPS.Services.Character
 		{
 			m_isMoving = isMoving;
 			m_isSprinting = isSprinting;
+		}
+
+		public void PlayUnholsterAnimation()
+		{
+			m_animator.Play("Unholster", WEAPON_CHANGE_LAYER, 0.1f);
+		}
+		
+		public void PlayHolsterAnimation()
+		{
+			m_animator.Play("Holster", WEAPON_CHANGE_LAYER, 0.1f);
+		}
+
+		public void PlayAttackAnimation(bool isAttackFailed)
+		{
+			m_animator.CrossFadeInFixedTime(isAttackFailed ? "BTree Attack Failed" : "BTree Attack", 0.02f, ATTACK_LAYER);
+		}
+
+		public void PlayReloadAnimation(bool isAmmoEmpty)
+		{
+			m_animator.CrossFadeInFixedTime(isAmmoEmpty ? "Reload Empty" : "Reload", 0.1f, RELOAD_LAYER);
+		}
+
+		public void StopReloadAnimationImmediately()
+		{
+			m_animator.Play("Default", RELOAD_LAYER);
 		}
 
 		private void Update()

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Game
+namespace SDFPS.Game.CursorManager
 {
 
 	public class CursorManager : MonoBehaviour
