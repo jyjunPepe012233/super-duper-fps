@@ -1,5 +1,6 @@
 using System.Collections;
 using SDFPS.Services.Character;
+using SDFPS.Utils.ComponentLocator;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,8 +10,10 @@ namespace SDFPS.Components.Character
 	[RequireComponent(typeof(PlayerCharacterLocomotionHandler))]
 	[RequireComponent(typeof(PlayerCharacterAnimationHandler))]
 	[RequireComponent(typeof(PlayerWeaponManager))]
-	public class PlayerCharacter : MonoBehaviour, PlayerAction.ICameraActions, PlayerAction.ICharacterBehaviourActions
+	public class PlayerCharacter : MonoBehaviour, IWorldLocatable, PlayerAction.ICameraActions, PlayerAction.ICharacterBehaviourActions
 	{
+		public GameObject source => gameObject;
+		
 		[Header("Services")]
 		[SerializeField] private FirstPersonRotationHandler m_rotationHandler;
 		[SerializeField] private PlayerCharacterLocomotionHandler m_locomotionHandler;

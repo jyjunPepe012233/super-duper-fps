@@ -1,6 +1,7 @@
 using System.Collections;
 using SDFPS.Services.Weapon;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SDFPS.Components.Weapon
 {
@@ -9,9 +10,17 @@ namespace SDFPS.Components.Weapon
 	public class Weapon : MonoBehaviour
 	{
 		[SerializeField] private WeaponAnimationHandler m_animationHandler;
-		
-		[Header("Attack")]
+
+		[Header("Fire")]
 		[SerializeField] private int m_rpm = 500;
+		[SerializeField] private Transform m_muzzleTransform;
+		[SerializeField] private GameObject m_bulletPrefab;
+		
+		[Header("Effects")]
+		[SerializeField] private ParticleSystem m_muzzleFlare;
+		[SerializeField] private int m_muzzleFlareCount = 5;
+		[SerializeField] private Transform m_casingEjectPoint;
+		[SerializeField] private GameObject m_casingPrefab;
 		
 		[Header("Ammo Loading")]
 		[SerializeField] private bool m_useAmmo = true; 
@@ -62,7 +71,20 @@ namespace SDFPS.Components.Weapon
 
 		private void Attack()
 		{
-			Debug.Log("빵!");
+			if (m_bulletPrefab != null)
+			{
+				GameObject projectile = Instantiate(m_bulletPrefab, m_muzzleTransform.position, m_muzzleTransform.rotation);
+			}
+			
+			if (m_casingPrefab != null)
+			{
+				GameObject casing = Instantiate(m_casingPrefab, m_casingEjectPoint.position, m_casingEjectPoint.rotation);
+			}
+
+			if (m_muzzleFlare != null)
+			{
+				m_muzzleFlare.Emit(m_muzzleFlareCount);
+			}
 		}
 
 		private void StartAttackCool()
