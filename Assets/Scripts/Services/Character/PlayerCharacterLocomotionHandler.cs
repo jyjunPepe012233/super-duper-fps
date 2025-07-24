@@ -24,6 +24,10 @@ namespace SDFPS.Services.Character
         {
             Vector3 inputToLocalDirection = new Vector3(playerInput.x, 0, playerInput.y);
             Vector3 localToWorldDirection = m_directionReference.TransformDirection(inputToLocalDirection);
+            
+            localToWorldDirection.y = 0;
+            localToWorldDirection.Normalize();
+            
             m_rigidbody.velocity = 
                 GetParalleledDirection(localToWorldDirection) * GetCurrentMoveSpeed(isSprinting);
         }
