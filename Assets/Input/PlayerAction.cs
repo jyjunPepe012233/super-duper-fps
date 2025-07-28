@@ -80,6 +80,15 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Toogle Fire Mode"",
+                    ""type"": ""Button"",
+                    ""id"": ""afabfca2-6b8c-43b7-957d-31af179012a4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -203,6 +212,17 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc72264e-6f5c-499a-b9a6-c357ab23e564"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Toogle Fire Mode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -245,6 +265,7 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         m_CharacterBehaviour_ScrollWeapon = m_CharacterBehaviour.FindAction("Scroll Weapon", throwIfNotFound: true);
         m_CharacterBehaviour_Attack = m_CharacterBehaviour.FindAction("Attack", throwIfNotFound: true);
         m_CharacterBehaviour_Reload = m_CharacterBehaviour.FindAction("Reload", throwIfNotFound: true);
+        m_CharacterBehaviour_ToogleFireMode = m_CharacterBehaviour.FindAction("Toogle Fire Mode", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_MouseMove = m_Camera.FindAction("Mouse Move", throwIfNotFound: true);
@@ -321,6 +342,7 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterBehaviour_ScrollWeapon;
     private readonly InputAction m_CharacterBehaviour_Attack;
     private readonly InputAction m_CharacterBehaviour_Reload;
+    private readonly InputAction m_CharacterBehaviour_ToogleFireMode;
     public struct CharacterBehaviourActions
     {
         private @PlayerAction m_Wrapper;
@@ -331,6 +353,7 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         public InputAction @ScrollWeapon => m_Wrapper.m_CharacterBehaviour_ScrollWeapon;
         public InputAction @Attack => m_Wrapper.m_CharacterBehaviour_Attack;
         public InputAction @Reload => m_Wrapper.m_CharacterBehaviour_Reload;
+        public InputAction @ToogleFireMode => m_Wrapper.m_CharacterBehaviour_ToogleFireMode;
         public InputActionMap Get() { return m_Wrapper.m_CharacterBehaviour; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -358,6 +381,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @ToogleFireMode.started += instance.OnToogleFireMode;
+            @ToogleFireMode.performed += instance.OnToogleFireMode;
+            @ToogleFireMode.canceled += instance.OnToogleFireMode;
         }
 
         private void UnregisterCallbacks(ICharacterBehaviourActions instance)
@@ -380,6 +406,9 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @ToogleFireMode.started -= instance.OnToogleFireMode;
+            @ToogleFireMode.performed -= instance.OnToogleFireMode;
+            @ToogleFireMode.canceled -= instance.OnToogleFireMode;
         }
 
         public void RemoveCallbacks(ICharacterBehaviourActions instance)
@@ -451,6 +480,7 @@ public partial class @PlayerAction: IInputActionCollection2, IDisposable
         void OnScrollWeapon(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+        void OnToogleFireMode(InputAction.CallbackContext context);
     }
     public interface ICameraActions
     {

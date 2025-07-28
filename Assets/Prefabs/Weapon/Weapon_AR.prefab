@@ -5315,6 +5315,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_animationHandler: {fileID: 2691533332766650982}
+  m_allowFullAuto: 1
   m_rpm: 700
   m_muzzleTransform: {fileID: 7584739961824450519}
   m_bulletPool: {fileID: 11400000, guid: 7637ed641a1f449899442c0c129f9d0d, type: 2}

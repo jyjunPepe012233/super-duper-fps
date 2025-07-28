@@ -8,6 +8,10 @@ using UnityEngine.Serialization;
 
 namespace SDFPS.Components.Weapon
 {
+	public enum FireMode {
+		SemiAuto,
+		FullAuto
+	}
 
 	[RequireComponent(typeof(WeaponAnimationHandler))]
 	public class Weapon : MonoBehaviour
@@ -15,6 +19,7 @@ namespace SDFPS.Components.Weapon
 		[SerializeField] private WeaponAnimationHandler m_animationHandler;
 
 		[Header("Fire")]
+		[SerializeField] private bool m_allowFullAuto;
 		[SerializeField] private int m_rpm = 500;
 		[SerializeField] private Transform m_muzzleTransform; 
 		[SerializeField] private ObjectPoolSetting m_bulletPool;
@@ -35,45 +40,26 @@ namespace SDFPS.Components.Weapon
 		
 		private int m_loadedAmmo;
 		private bool m_isAttackCoolDown;
+		private bool m_usingFullAuto;
 
 		private WaitForSeconds m_attackCoolYield;
 
+		public bool allowFullAuto => m_allowFullAuto;
 		public int rpm => m_rpm;
 		public bool useAmmo => m_useAmmo;
 		public int maxMagazine => maxMagazine;
 		public int loadedAmmo => m_loadedAmmo;
 		public bool isAttackCoolDown => m_isAttackCoolDown;
+		public bool usingFullAuto => m_usingFullAuto;
 
 		public bool infiniteMagazine => m_infiniteMagazine;
 		public int magazine => m_magazine;
-		
-		public bool AttemptAttack()
-		{
-			if (m_isAttackCoolDown)
-			{
-				return false;
-			}
-			
-			if (m_useAmmo)
-			{
-				if (m_loadedAmmo > 0)
-				{
-					m_loadedAmmo -= 1;
-					Attack();
-				}
-			}
-			else
-			{
-				Attack();
-			}
 
+		public void Attack()
+		{
 			StartAttackCool();
 			m_animationHandler.PlayAttackAnimation();
-			return true;
-		}
-
-		private void Attack()
-		{
+			
 			if (m_bulletPool != null)
 			{
 				Bullet bullet = PoolManager.singleton.TakeFromPool(m_bulletPool).GetComponent<Bullet>();
@@ -89,6 +75,14 @@ namespace SDFPS.Components.Weapon
 			if (m_muzzleFlare != null)
 			{
 				m_muzzleFlare.Emit(m_muzzleFlareCount);
+			}
+		}
+
+		public void ConsumeAmmo()
+		{
+			if (m_loadedAmmo > 0)
+			{
+				m_loadedAmmo -= 1;
 			}
 		}
 
@@ -120,6 +114,14 @@ namespace SDFPS.Components.Weapon
 		public void PlayReloadAnimation(bool isAmmoEmpty)
 		{
 			m_animationHandler.PlayReloadAnimation(isAmmoEmpty);
+		}
+
+		public void ToggleFireMode()
+		{
+			if (m_allowFullAuto)
+			{
+				m_usingFullAuto = !m_usingFullAuto;
+			}
 		}
 	}
 

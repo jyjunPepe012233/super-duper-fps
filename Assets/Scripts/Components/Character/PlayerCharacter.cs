@@ -125,6 +125,14 @@ namespace SDFPS.Components.Character
 			}
 		}
 
+		public void OnToogleFireMode(InputAction.CallbackContext context)
+		{
+			if (context.started)
+			{
+				ToggleFireMode();
+			}
+		}
+
 		private void Update()
 		{
 			m_rotationHandler.RotateToward(m_mouseMoveInput);
@@ -190,13 +198,21 @@ namespace SDFPS.Components.Character
 
 		private void Attack()
 		{
-			if (m_weaponManager.AttemptAttack())
+			if (m_weaponManager.AttemptAttack(out bool shouldCancelInput))
 			{
 				bool hasLoadedAmmo = m_weaponManager.HasLoadedAmmo();
 				
 				m_animationHandler.PlayAttackAnimation(!hasLoadedAmmo);
 
 				if (!hasLoadedAmmo)
+				{
+					m_attackInput = false;
+				}
+
+				// shouldCancelInput이 활성화되면 공격 입력 신호를 비활성화한다.
+				// shouldCancelInput은 총의 발사가 단발로 설정되어 있을 때, 플레이어가 물리적 입력을 끝내지 않아도
+				// 한 번의 공격 후에 다시 공격이 발동하지 않도록 하기 위해 활성화된다.
+				if (shouldCancelInput)
 				{
 					m_attackInput = false;
 				}
@@ -235,6 +251,11 @@ namespace SDFPS.Components.Character
 				yield return new WaitUntil(() => isReloadEnded);
 				m_isReloading = false;
 			}
+		}
+
+		private void ToggleFireMode()
+		{
+			m_weaponManager.TryToggleFireMode();
 		}
  	}
 
