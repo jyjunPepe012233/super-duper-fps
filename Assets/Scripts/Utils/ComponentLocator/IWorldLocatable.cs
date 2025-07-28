@@ -1,11 +1,12 @@
 using UnityEngine;
+using Utils.IGameObjectSource;
 
 namespace SDFPS.Utils.ComponentLocator
 {
 
-	public interface IWorldLocatable
+	public interface IWorldLocatable : IGameObjectSource  
 	{
-		public GameObject source { get; }
+		
 	}
 
 }

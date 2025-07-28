@@ -12,7 +12,7 @@ namespace SDFPS.Components.Character
 	[RequireComponent(typeof(PlayerWeaponManager))]
 	public class PlayerCharacter : MonoBehaviour, IWorldLocatable, PlayerAction.ICameraActions, PlayerAction.ICharacterBehaviourActions
 	{
-		public GameObject source => gameObject;
+		public GameObject gameObjectSource => gameObject;
 		
 		[Header("Services")]
 		[SerializeField] private FirstPersonRotationHandler m_rotationHandler;

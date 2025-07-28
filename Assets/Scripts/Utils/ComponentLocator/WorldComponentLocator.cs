@@ -28,7 +28,7 @@ namespace SDFPS.Utils.ComponentLocator
 			IWorldLocatable result = m_worldLocatables[key];
 			if (result != null)
 			{
-				return result.source.GetComponent<T>();
+				return result.gameObjectSource.GetComponent<T>();
 			}
 			else
 			{

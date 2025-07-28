@@ -1,5 +1,8 @@
 using System.Collections;
+using SDFPS.Components.Effects.Casing;
+using SDFPS.Components.Projectile;
 using SDFPS.Services.Weapon;
+using SDFPS.Utils.ObjectPooling;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,14 +16,14 @@ namespace SDFPS.Components.Weapon
 
 		[Header("Fire")]
 		[SerializeField] private int m_rpm = 500;
-		[SerializeField] private Transform m_muzzleTransform;
-		[SerializeField] private GameObject m_bulletPrefab;
+		[SerializeField] private Transform m_muzzleTransform; 
+		[SerializeField] private ObjectPoolSetting m_bulletPool;
 		
 		[Header("Effects")]
 		[SerializeField] private ParticleSystem m_muzzleFlare;
 		[SerializeField] private int m_muzzleFlareCount = 5;
 		[SerializeField] private Transform m_casingEjectPoint;
-		[SerializeField] private GameObject m_casingPrefab;
+		[SerializeField] private ObjectPoolSetting m_casingPool;
 		
 		[Header("Ammo Loading")]
 		[SerializeField] private bool m_useAmmo = true; 
@@ -71,14 +74,16 @@ namespace SDFPS.Components.Weapon
 
 		private void Attack()
 		{
-			if (m_bulletPrefab != null)
+			if (m_bulletPool != null)
 			{
-				GameObject projectile = Instantiate(m_bulletPrefab, m_muzzleTransform.position, m_muzzleTransform.rotation);
+				Bullet bullet = PoolManager.singleton.TakeFromPool(m_bulletPool).GetComponent<Bullet>();
+				bullet.ShootAt(m_muzzleTransform.position, m_muzzleTransform.rotation);
 			}
 			
-			if (m_casingPrefab != null)
-			{
-				GameObject casing = Instantiate(m_casingPrefab, m_casingEjectPoint.position, m_casingEjectPoint.rotation);
+			if (m_casingPool != null)
+			{ 
+				Casing casing = PoolManager.singleton.TakeFromPool(m_casingPool).GetComponent<Casing>();
+				casing.EjectAt(m_casingEjectPoint.position, m_casingEjectPoint.rotation);
 			}
 
 			if (m_muzzleFlare != null)

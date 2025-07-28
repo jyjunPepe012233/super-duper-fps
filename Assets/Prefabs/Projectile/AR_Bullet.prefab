@@ -51,7 +51,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_rigidbody: {fileID: 7587590511895821755}
+  m_collider: {fileID: 2442139927318384211}
+  m_trailRenderer: {fileID: 2744719704346657819}
   m_speed: 100
+  m_lifeTime: 5
 --- !u!54 &7587590511895821755
 Rigidbody:
   m_ObjectHideFlags: 0

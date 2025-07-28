@@ -65,8 +65,6 @@ namespace SDFPS.Services.Character
 
 		public void ScrollWeapon(int direction)
 		{
-			Debug.Log("direction: " + direction);
-			Debug.Log(GetNextWeaponSlot(direction));
 			ChangeWeapon(GetNextWeaponSlot(direction));
 		}
 

@@ -5317,11 +5317,11 @@ MonoBehaviour:
   m_animationHandler: {fileID: 2691533332766650982}
   m_rpm: 700
   m_muzzleTransform: {fileID: 7584739961824450519}
-  m_bulletPrefab: {fileID: 6018762865582810646, guid: f6a01c4e774cf408993e368232be4d92, type: 3}
+  m_bulletPool: {fileID: 11400000, guid: 7637ed641a1f449899442c0c129f9d0d, type: 2}
   m_muzzleFlare: {fileID: 7165469779745782995}
   m_muzzleFlareCount: 5
   m_casingEjectPoint: {fileID: 6837258736859548961}
-  m_casingPrefab: {fileID: 8409103668581009760, guid: ce0a86511e21d47328b691ce95882caf, type: 3}
+  m_casingPool: {fileID: 11400000, guid: 4f13c0858bab340468b0c016fa7d11f3, type: 2}
   m_useAmmo: 1
   m_maxAmmo: 30
   m_infiniteMagazine: 0
