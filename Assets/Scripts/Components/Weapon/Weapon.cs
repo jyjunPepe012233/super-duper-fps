@@ -47,7 +47,7 @@ namespace SDFPS.Components.Weapon
 		public bool allowFullAuto => m_allowFullAuto;
 		public int rpm => m_rpm;
 		public bool useAmmo => m_useAmmo;
-		public int maxMagazine => maxMagazine;
+		public int maxAmmo => m_maxAmmo;
 		public int loadedAmmo => m_loadedAmmo;
 		public bool isAttackCoolDown => m_isAttackCoolDown;
 		public bool usingFullAuto => m_usingFullAuto;

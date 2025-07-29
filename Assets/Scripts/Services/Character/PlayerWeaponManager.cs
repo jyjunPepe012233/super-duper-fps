@@ -1,10 +1,12 @@
+using System;
+using SDFPS.UI.WeaponHUD;
 using UnityEngine;
 
 namespace SDFPS.Services.Character
 {
 	using Weapon = SDFPS.Components.Weapon.Weapon;
 	
-	public class PlayerWeaponManager : MonoBehaviour
+	public class PlayerWeaponManager : MonoBehaviour, IWeaponHUDModel
 	{ 
 		[SerializeField] private Weapon[] m_weapons;
 
@@ -40,7 +42,7 @@ namespace SDFPS.Services.Character
 		{
 			shouldCancelInput = false;
 			
-			Weapon weapon = m_weapons[m_holdingWeapon];
+			Weapon weapon = GetCurrentWeapon();
 			
 			if (weapon.isAttackCoolDown)
 			{
@@ -56,6 +58,8 @@ namespace SDFPS.Services.Character
 				else
 				{
 					weapon.ConsumeAmmo();
+					
+					onLoadedAmmoUpdated?.Invoke();
 				}
 			}
 
@@ -64,46 +68,30 @@ namespace SDFPS.Services.Character
 			if (!weapon.usingFullAuto) shouldCancelInput = true;
 			
 			weapon.Attack();
+			
 			return true;
 		}
 
 		public void ChargeAmmoAndConsumeMagazineImmediately()
 		{
-			Weapon weapon = m_weapons[m_holdingWeapon];
+			Weapon weapon = GetCurrentWeapon();
+			
 			weapon.ChargeAmmo();
+			
+			onLoadedAmmoUpdated?.Invoke();
+			
 			weapon.ConsumeMagazine();
+			
+			onMagazineUpdated?.Invoke();
 		}
 
 		public void PlayReloadAnimation()
 		{
-			Weapon weapon = m_weapons[m_holdingWeapon];
+			Weapon weapon = GetCurrentWeapon();
+			
 			weapon.PlayReloadAnimation(!HasLoadedAmmo());
 		}
 		
-		public bool HasLoadedAmmo()
-		{
-			Weapon weapon = m_weapons[m_holdingWeapon];
-			return weapon.loadedAmmo > 0 || !weapon.useAmmo;
-		}
-
-		public int GetLoadedAmmoCount()
-		{
-			Weapon weapon = m_weapons[m_holdingWeapon];
-			return weapon.loadedAmmo;
-		}
-
-		public bool HasMagazine()
-		{
-			Weapon weapon = m_weapons[m_holdingWeapon];
-			return weapon.magazine > 0 || weapon.infiniteMagazine;
-		}
-
-		public int GetMagazineCount()
-		{
-			Weapon weapon = m_weapons[m_holdingWeapon];
-			return weapon.magazine;
-		}
-
 		public void ScrollWeapon(int direction)
 		{
 			ChangeWeapon(GetNextWeaponSlot(direction));
@@ -122,20 +110,63 @@ namespace SDFPS.Services.Character
 			{
 				m_weapons[i].gameObject.SetActive(i == m_holdingWeapon);
 			}
+			
+			onWeaponUpdated?.Invoke();
 		}
 
 		public bool TryToggleFireMode()
 		{
-			Weapon weapon = m_weapons[m_holdingWeapon];
+			Weapon weapon = GetCurrentWeapon();
+			
 			if (weapon.allowFullAuto)
 			{
 				weapon.ToggleFireMode();
+				
+				onFireModeUpdated?.Invoke();
+				
 				return true;
 			}
 			else
 			{
 				return false;
 			}
+		}
+
+		public event Action onLoadedAmmoUpdated;
+		
+		public event Action onMagazineUpdated;
+		
+		public event Action onFireModeUpdated;
+		
+		public event Action onWeaponUpdated;
+
+		public bool HasLoadedAmmo()
+		{
+			Weapon weapon = m_weapons[m_holdingWeapon];
+			return weapon.loadedAmmo > 0 || !weapon.useAmmo;
+		}
+
+		public bool IsAmmoUnlimited() => !GetCurrentWeapon().useAmmo;
+
+		public int GetLoadedAmmoCount() => GetCurrentWeapon().loadedAmmo;
+
+		public int GetMaxAmmoCount() => GetCurrentWeapon().maxAmmo;
+
+		public bool HasMagazine()
+		{
+			Weapon weapon = m_weapons[m_holdingWeapon];
+			return weapon.magazine > 0 || weapon.infiniteMagazine;
+		}
+
+		public bool IsMagazineUnlimited() => GetCurrentWeapon().infiniteMagazine;
+
+		public int GetMagazineCount() => GetCurrentWeapon().magazine;
+
+		public string GetWeaponName() => GetCurrentWeapon().name;
+
+		public string GetFireMode()
+		{
+			return GetCurrentWeapon().usingFullAuto ? "Full-Auto" : "Semi-Auto";
 		}
 	}
 
