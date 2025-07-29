@@ -36,6 +36,8 @@ namespace SDFPS.Components.Character
 
 		private PlayerAction m_actionMap;
 
+		private Coroutine m_reloadingCoroutine;
+
 		public void Awake()
 		{
 			m_actionMap = new PlayerAction();
@@ -98,9 +100,6 @@ namespace SDFPS.Components.Character
 		{
 			int direction = (int)Mathf.Sign(context.ReadValue<float>());
 			ScrollWeapon(direction);
-			
-			m_isReloading = false;
-			m_animationHandler.StopReloadAnimationImmediately();
 		}
 
 		public void OnAttack(InputAction.CallbackContext context)
@@ -165,6 +164,16 @@ namespace SDFPS.Components.Character
 			if (!m_isChangingWeapon)
 			{
 				StartCoroutine(ScrollWeaponRoutine(direction));
+				
+				// 무기 전환 시 현재 진행 중인 장전을 취소
+				if (m_isReloading)
+				{
+					m_isReloading = false;
+
+					StopCoroutine(m_reloadingCoroutine);
+					
+					m_animationHandler.StopReloadAnimationImmediately();
+				}
 			}
 		}
 
@@ -174,23 +183,35 @@ namespace SDFPS.Components.Character
 			
 			if (m_weaponManager.GetCurrentWeapon() != null)
 			{
+				// 애니메이션을 실행시키고, 애니메이션의 이벤트를 구독하여 holster가 끝나기를 기다림.
 				m_animationHandler.PlayHolsterAnimation();
+				
 				bool waitForHolsterFinish = false;
+				
 				m_animationEventReceiver.holsterEnded += () =>
 				{
 					waitForHolsterFinish = true;
 				};
+				
 				yield return new WaitUntil(() => waitForHolsterFinish);
 			}
 			
+			
+			// WeaponManager의 ScrollWeapon은 실제로 활성화된 무기를 변경하는 작업임.
 			m_weaponManager.ScrollWeapon(direction);
 			
+			
+			// 애니메이션을 실행시키고, 애니메이션의 이벤트를 구독하여 unholster가 끝나기를 기다림.
+			// unholster가 끝나면 isChangingWeapon 플래그가 비활성화되어 다른 행동이 가능해짐.
 			m_animationHandler.PlayUnholsterAnimation();
+			
 			bool waitForUnholsterFinish = false;
+			
 			m_animationEventReceiver.unholsterEnded += () =>
 			{
 				waitForUnholsterFinish = true;
 			};
+			
 			yield return new WaitUntil(() => waitForUnholsterFinish);
 
 			m_isChangingWeapon = false;
@@ -221,36 +242,36 @@ namespace SDFPS.Components.Character
 
 		private void Reload()
 		{
-			StartCoroutine(ReloadRoutine());
+			if (m_weaponManager.HasMagazine() && !m_isReloading && !m_isChangingWeapon)
+			{
+				m_reloadingCoroutine = StartCoroutine(ReloadRoutine());
+			}
 		}
 
 		private IEnumerator ReloadRoutine()
 		{
-			if (m_weaponManager.HasMagazine())
-			{
-				m_isReloading = true;
-				
-				m_animationHandler.PlayReloadAnimation(!m_weaponManager.HasLoadedAmmo());
-				m_weaponManager.PlayReloadAnimation();
-
-				bool isMagazineEquipped = false;
-				m_animationEventReceiver.magazineEquipped += () =>
-				{
-					isMagazineEquipped = true;
-				};
-				
-				yield return new WaitUntil(() => isMagazineEquipped);
-				m_weaponManager.ChargeAmmoAndConsumeMagazineImmediately();
-				
-				bool isReloadEnded = false;
-				m_animationEventReceiver.reloadEnded += () =>
-				{
-					isReloadEnded = true;
-				};
+			m_isReloading = true;
 			
-				yield return new WaitUntil(() => isReloadEnded);
-				m_isReloading = false;
-			}
+			m_animationHandler.PlayReloadAnimation(!m_weaponManager.HasLoadedAmmo());
+			m_weaponManager.PlayReloadAnimation();
+
+			bool isMagazineEquipped = false;
+			m_animationEventReceiver.magazineEquipped += () =>
+			{
+				isMagazineEquipped = true;
+			};
+			
+			yield return new WaitUntil(() => isMagazineEquipped);
+			m_weaponManager.ChargeAmmoAndConsumeMagazineImmediately();
+			
+			bool isReloadEnded = false;
+			m_animationEventReceiver.reloadEnded += () =>
+			{
+				isReloadEnded = true;
+			};
+		
+			yield return new WaitUntil(() => isReloadEnded);
+			m_isReloading = false;
 		}
 
 		private void ToggleFireMode()
