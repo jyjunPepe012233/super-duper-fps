@@ -62,6 +62,20 @@ namespace SDFPS.UI.WeaponHUD
 			}
 		}
 
+		public void UpdateAllStatus()
+		{
+			UpdateLoadedAmmo();
+			UpdateMaxAmmo();
+			UpdateMagazine();
+			UpdateFireMode();
+			UpdateWeaponName();
+		}
+
+		public void OnEnable()
+		{
+			UpdateAllStatus();
+		}
+
 		public void UpdateLoadedAmmo()
 		{
 			if (m_model.IsAmmoUnlimited())
