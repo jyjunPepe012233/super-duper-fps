@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1766706234845674054}
   - component: {fileID: 3068124455709174077}
+  - component: {fileID: 5962032373935298971}
   - component: {fileID: 7587590511895821755}
   - component: {fileID: 2442139927318384211}
   - component: {fileID: 2744719704346657819}
@@ -53,8 +54,24 @@ MonoBehaviour:
   m_rigidbody: {fileID: 7587590511895821755}
   m_collider: {fileID: 2442139927318384211}
   m_trailRenderer: {fileID: 2744719704346657819}
+  m_damageCollider: {fileID: 5962032373935298971}
   m_speed: 100
   m_lifeTime: 5
+  m_minDamage: 24
+  m_maxDamage: 30
+--- !u!114 &5962032373935298971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6018762865582810646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30f2d619eb8249929bc99601560375c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 0
 --- !u!54 &7587590511895821755
 Rigidbody:
   m_ObjectHideFlags: 0
