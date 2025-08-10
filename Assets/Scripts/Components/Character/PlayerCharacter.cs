@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using Mirror;
 using SDFPS.Services.Character;
 using SDFPS.Utils.ComponentLocator;
 using UnityEngine;
@@ -10,7 +12,7 @@ namespace SDFPS.Components.Character
 	[RequireComponent(typeof(PlayerCharacterLocomotionHandler))]
 	[RequireComponent(typeof(PlayerCharacterAnimationHandler))]
 	[RequireComponent(typeof(PlayerWeaponManager))]
-	public class PlayerCharacter : MonoBehaviour, IWorldLocatable, PlayerAction.ICameraActions, PlayerAction.ICharacterBehaviourActions
+	public class PlayerCharacter : NetworkBehaviour, IWorldLocatable, PlayerAction.ICameraActions, PlayerAction.ICharacterBehaviourActions
 	{
 		public GameObject gameObjectSource => gameObject;
 		
@@ -277,6 +279,26 @@ namespace SDFPS.Components.Character
 		private void ToggleFireMode()
 		{
 			m_weaponManager.TryToggleFireMode();
+		}
+
+		public void FixedUpdate()
+		{
+			CmdSendTransform(transform.position, transform.rotation);
+		}
+
+		[Command]
+		public void CmdSendTransform(Vector3 position, Quaternion rotation)
+		{
+			RpcReceiveTransform(netId, position, rotation);
+		}
+
+		[ClientRpc(includeOwner = false)]
+		public void RpcReceiveTransform(uint playerNetId, Vector3 position, Quaternion rotation)
+		{
+			if (NetworkClient.spawned.TryGetValue(playerNetId, out NetworkIdentity identity))
+			{
+				identity.GetComponent<PlayerCharacterSetup>().remotePlayerController.SetTransform(position, rotation);
+			}
 		}
  	}
 

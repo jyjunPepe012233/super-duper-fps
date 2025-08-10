@@ -31,7 +31,6 @@ namespace SDFPS.Components.Props.DamageableProp
 
 		private void GetDamage(int damage)
 		{
-			Debug.Log(1);
 			if (damage >= m_minDamageToKnockDown)
 			{
 				KnockDown();
